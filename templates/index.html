@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Gestor de Tareas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 2em;
+        }
+        
+        .completed {
+            text-decoration: line-through;
+            color: gray;
+        }
+        
+        .task {
+            margin-bottom: 1em;
+        }
+        
+        select,
+        button {
+            margin-left: 0.5em;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Gestor de Tareas Pendientes</h1>
+    <form action="/add" method="post">
+        <input type="text" name="title" placeholder="Nueva tarea" required>
+        <button type="submit">Agregar</button>
+    </form>
+    <hr>
+    <h2>Lista de Tareas</h2>
+    {% for task in tasks %}
+    <div class="task">
+        <strong {% if task.status=='Completada' %}class="completed" {% endif %}>{{ task.title }}</strong>
+        <form action="/update/{{ task.id }}" method="post" style="display:inline;">
+            <select name="status">
+                    {% for status in task.STATUS_OPTIONS %}
+                        <option value="{{ status }}" {% if task.status == status %}selected{% endif %}>{{ status }}</option>
+                    {% endfor %}
+                </select>
+            <button type="submit">Actualizar</button>
+        </form>
+        <span>Estado: <em>{{ task.status }}</em></span>
+    </div>
+    {% else %}
+    <p>No hay tareas registradas.</p>
+    {% endfor %}
+</body>
+
+</html>
