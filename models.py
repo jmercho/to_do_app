@@ -23,13 +23,16 @@ class Task:
         self.title = title
         self.status = status
 
-    def update_status(self, new_status: str):
+    def update_status(self, new_status: str) -> bool:
         """
         Actualiza el estado de la tarea.
         :param new_status: Nuevo estado a asignar.
+        :return: True si el estado es válido y se actualizó, False si no.
         """
         if new_status in self.STATUS_OPTIONS:
             self.status = new_status
+            return True
+        return False
 
 class TaskManager:
     """
@@ -39,14 +42,21 @@ class TaskManager:
         self.tasks: List[Task] = []
         self.next_id = 1
 
-    def create_task(self, title: str):
+    def create_task(self, title: str) -> bool:
         """
-        Crea una nueva tarea y la agrega a la lista.
+        Crea una nueva tarea y la agrega a la lista si el título es válido y no está duplicado.
         :param title: Título de la tarea.
+        :return: True si la tarea fue creada, False si no.
         """
+        title = title.strip()
+        if not title:
+            return False
+        if any(task.title.lower() == title.lower() for task in self.tasks):
+            return False
         task = Task(self.next_id, title)
         self.tasks.append(task)
         self.next_id += 1
+        return True
 
     def list_tasks(self) -> List[Task]:
         """
@@ -55,13 +65,26 @@ class TaskManager:
         """
         return self.tasks
 
-    def update_task_status(self, task_id: int, status: str):
+    def update_task_status(self, task_id: int, status: str) -> bool:
         """
         Actualiza el estado de una tarea por su ID.
         :param task_id: ID de la tarea.
         :param status: Nuevo estado.
+        :return: True si se actualizó, False si no.
         """
         for task in self.tasks:
             if task.id == task_id:
-                task.update_status(status)
-                break
+                return task.update_status(status)
+        return False
+
+    def delete_task(self, task_id: int) -> bool:
+        """
+        Elimina una tarea por su ID.
+        :param task_id: ID de la tarea.
+        :return: True si la tarea fue eliminada, False si no.
+        """
+        for i, task in enumerate(self.tasks):
+            if task.id == task_id:
+                del self.tasks[i]
+                return True
+        return False
